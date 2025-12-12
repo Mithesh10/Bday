@@ -1,0 +1,342 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Happy Birthday! 🎉</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&family=Pacifico&display=swap" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/canvas-confetti/1.6.0/confetti.browser.min.js"></script>
+
+    <style>
+        /* --- GLOBAL STYLES --- */
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: linear-gradient(135deg, #ffcee6 0%, #ffd6f1 50%, #e4f9ff 100%);
+            min-height: 100vh;
+            overflow: hidden;
+            position: relative;
+        }
+
+        /* --- BACKGROUND DECORATIONS --- */
+        .background-decorations {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        .balloon {
+            position: absolute;
+            width: 60px; height: 70px;
+            background: radial-gradient(circle at 30% 30%, #ff7eb9, #ff1493);
+            border-radius: 50%;
+            box-shadow: inset -5px -5px 0 rgba(0, 0, 0, 0.1);
+            animation: floatUp 15s linear infinite;
+            bottom: -100px;
+            opacity: 0.8;
+        }
+        .balloon::before {
+            content: ""; position: absolute; width: 2px; height: 80px;
+            background: rgba(0, 0, 0, 0.2); top: 100%; left: 50%;
+        }
+        @keyframes floatUp {
+            0% { transform: translateY(0) rotate(0deg); opacity: 1; }
+            100% { transform: translateY(-120vh) rotate(360deg); opacity: 0; }
+        }
+
+        .confetti-piece {
+            position: absolute; width: 10px; height: 10px;
+            top: -20px; animation: floatDown 5s ease-in infinite;
+        }
+        @keyframes floatDown {
+            0% { transform: translateY(-10px) rotate(0); opacity: 1; }
+            100% { transform: translateY(100vh) rotate(360deg); opacity: 0; }
+        }
+
+        /* --- SCREEN MANAGEMENT --- */
+        .screen {
+            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+            display: flex; flex-direction: column; justify-content: center; align-items: center;
+            opacity: 0; pointer-events: none; z-index: 1;
+            transition: opacity 1s ease-in-out;
+        }
+        .screen.active {
+            opacity: 1; pointer-events: all; z-index: 10;
+        }
+
+        .btn {
+            padding: 12px 30px; font-size: 1.1rem;
+            background: linear-gradient(45deg, #FF1493, #8A2BE2);
+            color: white; border: none; border-radius: 50px;
+            cursor: pointer; box-shadow: 0 4px 15px rgba(255, 20, 147, 0.4);
+            margin-top: 20px; font-weight: 600; z-index: 100;
+        }
+        .btn:hover { transform: scale(1.05); }
+
+        /* --- SCREEN 1: INTRO --- */
+        .intro-box {
+            background: rgba(255, 255, 255, 0.6);
+            backdrop-filter: blur(5px); padding: 40px;
+            border-radius: 20px; text-align: center;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+        }
+        h1 { font-family: 'Pacifico', cursive; font-size: 3rem; color: #FF1493; margin-bottom: 15px; }
+
+        /* --- SCREEN 2: GALLERY --- */
+        .gallery-container {
+            width: 90%; max-width: 600px; height: 60vh;
+            position: relative;
+            display: flex; justify-content: center; align-items: center;
+        }
+        .photo-card {
+            position: absolute;
+            width: 100%; height: 100%;
+            background: white; padding: 10px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            border-radius: 15px;
+            opacity: 0; /* Start hidden */
+            display: flex; justify-content: center; align-items: center;
+        }
+        .photo-card img {
+            width: 100%; height: 100%;
+            object-fit: contain; /* Shows full image */
+            border-radius: 5px;
+            background: #f0f0f0; /* Gray background if image fails */
+        }
+
+        /* --- SCREEN 3: CAKE --- */
+        .cake-wrapper { position: relative; width: 300px; height: 300px; margin-top: 40px; }
+        .cake {
+            position: absolute; bottom: 0; left: 50%; transform: translateX(-50%);
+            width: 200px; height: 120px; background: #ff99b6;
+            border-radius: 15px 15px 0 0; box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        }
+        .cake::before {
+            content: ''; position: absolute; top: -20px; left: 0; width: 100%; height: 30px;
+            background: #fff; border-radius: 10px 10px 0 0;
+        }
+        .candle-container {
+            display: flex; justify-content: center; gap: 15px;
+            position: absolute; top: -60px; left: 50%; transform: translateX(-50%); z-index: 10;
+        }
+        .candle {
+            width: 10px; height: 40px;
+            background: repeating-linear-gradient(45deg, #fff, #fff 5px, #8A2BE2 5px, #8A2BE2 10px);
+            position: relative; cursor: pointer;
+        }
+        .flame {
+            width: 12px; height: 20px; background: #ffcc00;
+            border-radius: 50% 50% 20% 20%;
+            position: absolute; top: -20px; left: 50%; transform: translateX(-50%);
+            box-shadow: 0 0 10px #ff9900, 0 0 20px #ffff00;
+            animation: flicker 0.5s infinite alternate;
+        }
+        @keyframes flicker {
+            0% { transform: translateX(-50%) scale(1); opacity: 1; }
+            100% { transform: translateX(-50%) scale(1.1); opacity: 0.8; }
+        }
+        .candle.blown .flame { display: none; }
+        .smoke {
+            position: absolute; top: -25px; left: 50%; width: 5px; height: 0;
+            background: rgba(100,100,100,0.5); transform: translateX(-50%);
+            border-radius: 5px; transition: height 0.5s, opacity 1s;
+        }
+        .candle.blown .smoke { height: 30px; opacity: 0; }
+
+        /* --- SCREEN 4: FINAL --- */
+        #screen-final { background: rgba(0,0,0,0.9); }
+        .final-image-container {
+            width: 90%; height: 70vh;
+            display: flex; justify-content: center; align-items: center;
+            border: 5px solid white; background: #000;
+            border-radius: 10px; overflow: hidden;
+        }
+        .final-image-container img {
+            width: 100%; height: 100%; object-fit: contain;
+        }
+
+    </style>
+</head>
+<body>
+
+    <audio id="bg-music" loop>
+        <source src="happy_bday.mp3" type="audio/mp3">
+    </audio>
+
+    <div class="background-decorations">
+        <div class="balloon" style="left: 10%; animation-duration: 18s; animation-delay: 0s;"></div>
+        <div class="balloon" style="left: 25%; animation-duration: 15s; animation-delay: 2s;"></div>
+        <div class="balloon" style="left: 40%; animation-duration: 20s; animation-delay: 1s;"></div>
+        <div class="balloon" style="left: 60%; animation-duration: 17s; animation-delay: 4s;"></div>
+        <div class="balloon" style="left: 80%; animation-duration: 22s; animation-delay: 3s;"></div>
+
+        <div class="confetti-piece" style="left: 5%; background: #ff6ec4; animation-duration: 4s;"></div>
+        <div class="confetti-piece" style="left: 15%; background: #75c6ff; animation-duration: 6s; animation-delay: 2s;"></div>
+        <div class="confetti-piece" style="left: 30%; background: #ff4e91; animation-duration: 5s; animation-delay: 1s;"></div>
+        <div class="confetti-piece" style="left: 55%; background: #a485ff; animation-duration: 7s; animation-delay: 3s;"></div>
+        <div class="confetti-piece" style="left: 70%; background: #ffcee6; animation-duration: 4.5s; animation-delay: 0.5s;"></div>
+        <div class="confetti-piece" style="left: 85%; background: #c175ff; animation-duration: 5.5s; animation-delay: 1.5s;"></div>
+        <div class="confetti-piece" style="left: 95%; background: #ff6ec4; animation-duration: 6.5s;"></div>
+    </div>
+
+    <div id="screen-intro" class="screen active">
+        <div class="intro-box">
+            <h1>Happy Birthday! 🎂</h1>
+            <p>Turn up the volume 🔊</p>
+            <button class="btn" onclick="startJourney()">Click Here ✨</button>
+        </div>
+    </div>
+
+    <div id="screen-gallery" class="screen">
+        <div class="gallery-container" id="gallery-wrapper">
+            </div>
+        <div class="next-btn-container" style="position: absolute; bottom: 20px;">
+            <button class="btn" onclick="goToCake()">Blow Candles 🕯️</button>
+        </div>
+    </div>
+
+    <div id="screen-cake" class="screen">
+        <h2 style="font-size: 2rem; color: #333; margin-bottom: 10px; text-shadow: 2px 2px white;">Make a Wish!</h2>
+        <div class="cake-wrapper">
+            <div class="cake">
+                <div class="candle-container">
+                    <div class="candle" onclick="blowCandle(this)"><div class="flame"></div><div class="smoke"></div></div>
+                    <div class="candle" onclick="blowCandle(this)"><div class="flame"></div><div class="smoke"></div></div>
+                    <div class="candle" onclick="blowCandle(this)"><div class="flame"></div><div class="smoke"></div></div>
+                    <div class="candle" onclick="blowCandle(this)"><div class="flame"></div><div class="smoke"></div></div>
+                    <div class="candle" onclick="blowCandle(this)"><div class="flame"></div><div class="smoke"></div></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="screen-final" class="screen">
+        <div class="final-image-container">
+            <img src="8.jpg" alt="Final Surprise">
+        </div>
+        <button id="thank-you-btn" class="btn" onclick="endExperience()">Thank you! ❤️</button>
+    </div>
+
+    <script>
+        // --- CONFIGURATION ---
+        // EXACT filenames. Check extensions carefully!
+        const photos = ['1.jpg', '2.jpeg', '3.jpg', '4.jpg', '5.jpg', '7.jpg'];
+        
+        const audio = document.getElementById('bg-music');
+        let candlesBlown = 0;
+        const totalCandles = 5;
+        let isSlideshowActive = false; // Flag to control slideshow
+
+        // --- NAVIGATION ---
+        function startJourney() {
+            // Play audio
+            audio.volume = 0.6;
+            audio.play().catch(e => console.log("Audio waiting for user interaction"));
+
+            // Switch to Gallery
+            transitionScreen('screen-intro', 'screen-gallery');
+
+            // Start Slideshow
+            isSlideshowActive = true;
+            initSlideshow();
+        }
+
+        function goToCake() {
+            isSlideshowActive = false; // Stop slideshow loop
+            transitionScreen('screen-gallery', 'screen-cake');
+        }
+
+        function transitionScreen(fromId, toId) {
+            const current = document.getElementById(fromId);
+            const next = document.getElementById(toId);
+
+            // 1. Fade out current
+            gsap.to(current, { opacity: 0, duration: 0.8, onComplete: () => {
+                current.classList.remove('active');
+                next.classList.add('active'); // Make next visible in DOM
+                
+                // 2. Fade in next
+                gsap.to(next, { opacity: 1, duration: 0.8 });
+            }});
+        }
+
+        // --- SLIDESHOW LOGIC ---
+        function initSlideshow() {
+            const wrapper = document.getElementById('gallery-wrapper');
+            wrapper.innerHTML = ''; // Clear existing to prevent duplicates
+
+            // Create cards
+            photos.forEach((src, index) => {
+                const card = document.createElement('div');
+                card.className = 'photo-card';
+                
+                const img = document.createElement('img');
+                img.src = src;
+                img.alt = "Photo " + (index + 1);
+                
+                card.appendChild(img);
+                wrapper.appendChild(card);
+            });
+
+            const cards = document.querySelectorAll('.photo-card');
+            let currentIndex = 0;
+
+            function cyclePhotos() {
+                if (!isSlideshowActive) return; // Stop if we moved to next screen
+
+                // Hide all cards
+                cards.forEach(c => {
+                    gsap.to(c, { opacity: 0, scale: 0.8, zIndex: 0, duration: 0.5 });
+                });
+
+                // Show current card
+                const current = cards[currentIndex];
+                if(current) {
+                    gsap.to(current, { 
+                        opacity: 1, 
+                        scale: 1, 
+                        zIndex: 10, 
+                        rotation: Math.random() * 6 - 3, 
+                        duration: 0.8, 
+                        ease: "back.out(1.7)" 
+                    });
+                }
+
+                currentIndex = (currentIndex + 1) % cards.length;
+                setTimeout(cyclePhotos, 2500);
+            }
+
+            // Start cycle immediately
+            cyclePhotos();
+        }
+
+        // --- CAKE LOGIC ---
+        function blowCandle(e) {
+            if(e.classList.contains('blown')) return;
+            
+            e.classList.add('blown');
+            candlesBlown++;
+
+            if(candlesBlown === totalCandles) {
+                setTimeout(() => {
+                    transitionScreen('screen-cake', 'screen-final');
+                    // Confetti burst
+                    confetti({ particleCount: 150, spread: 70, origin: { y: 0.6 } });
+                }, 1000);
+            }
+        }
+
+        // --- END LOGIC ---
+        function endExperience() {
+            audio.pause();
+            audio.currentTime = 0;
+            const btn = document.getElementById('thank-you-btn');
+            btn.innerText = "Glad you liked it! 😊";
+            btn.style.background = "#ccc";
+            btn.disabled = true;
+        }
+    </script>
+</body>
+</html>
