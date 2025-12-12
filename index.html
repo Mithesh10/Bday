@@ -3,17 +3,17 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Happy Birthday! 🎉</title>
+    <title>Happy Birthday Minnu! 💖</title>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&family=Pacifico&display=swap" rel="stylesheet">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/canvas-confetti/1.6.0/confetti.browser.min.js"></script>
 
     <style>
-        /* --- GLOBAL STYLES --- */
+        /* --- GLOBAL & BASE STYLES --- */
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body {
             font-family: 'Poppins', sans-serif;
-            background: linear-gradient(135deg, #ffcee6 0%, #ffd6f1 50%, #e4f9ff 100%);
+            background: linear-gradient(135deg, #fce4ec 0%, #ffc1e3 50%, #e0f7fa 100%);
             min-height: 100vh;
             overflow: hidden;
             position: relative;
@@ -21,21 +21,15 @@
 
         /* --- BACKGROUND DECORATIONS --- */
         .background-decorations {
-            position: fixed;
-            top: 0; left: 0; width: 100%; height: 100%;
-            pointer-events: none;
-            z-index: 0;
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            pointer-events: none; z-index: 0;
         }
 
         .balloon {
-            position: absolute;
-            width: 60px; height: 70px;
+            position: absolute; width: 60px; height: 70px;
             background: radial-gradient(circle at 30% 30%, #ff7eb9, #ff1493);
-            border-radius: 50%;
-            box-shadow: inset -5px -5px 0 rgba(0, 0, 0, 0.1);
-            animation: floatUp 15s linear infinite;
-            bottom: -100px;
-            opacity: 0.8;
+            border-radius: 50%; box-shadow: inset -5px -5px 0 rgba(0, 0, 0, 0.1);
+            animation: floatUp 15s linear infinite; bottom: -100px; opacity: 0.8;
         }
         .balloon::before {
             content: ""; position: absolute; width: 2px; height: 80px;
@@ -72,89 +66,119 @@
             color: white; border: none; border-radius: 50px;
             cursor: pointer; box-shadow: 0 4px 15px rgba(255, 20, 147, 0.4);
             margin-top: 20px; font-weight: 600; z-index: 100;
+            transition: transform 0.2s, background 0.3s;
         }
-        .btn:hover { transform: scale(1.05); }
+        .btn:hover:not(:disabled) { transform: scale(1.05); }
 
         /* --- SCREEN 1: INTRO --- */
         .intro-box {
-            background: rgba(255, 255, 255, 0.6);
-            backdrop-filter: blur(5px); padding: 40px;
-            border-radius: 20px; text-align: center;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            background: rgba(255, 255, 255, 0.85); backdrop-filter: blur(5px); padding: 40px;
+            border-radius: 25px; text-align: center; box-shadow: 0 15px 30px rgba(0,0,0,0.2);
         }
-        h1 { font-family: 'Pacifico', cursive; font-size: 3rem; color: #FF1493; margin-bottom: 15px; }
+        h1 { font-family: 'Pacifico', cursive; font-size: 3.5rem; color: #FF1493; margin-bottom: 15px; }
 
-        /* --- SCREEN 2: GALLERY --- */
+        /* --- SCREEN 2: GALLERY (New Slideshow) --- */
         .gallery-container {
-            width: 90%; max-width: 600px; height: 60vh;
+            width: 90%; max-width: 600px; height: 75vh;
             position: relative;
-            display: flex; justify-content: center; align-items: center;
+            background: rgba(255, 255, 255, 0.7);
+            border-radius: 15px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+            padding: 15px;
+            overflow: hidden;
         }
         .photo-card {
             position: absolute;
-            width: 100%; height: 100%;
-            background: white; padding: 10px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
-            border-radius: 15px;
-            opacity: 0; /* Start hidden */
+            top: 15px; left: 15px; right: 15px; bottom: 15px;
             display: flex; justify-content: center; align-items: center;
+            opacity: 0; /* Hidden by default for GSAP control */
         }
         .photo-card img {
             width: 100%; height: 100%;
-            object-fit: contain; /* Shows full image */
+            object-fit: contain;
             border-radius: 5px;
-            background: #f0f0f0; /* Gray background if image fails */
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+        
+        /* --- SCREEN 3: CAKE --- */
+        #screen-cake {
+             background: radial-gradient(circle at 50% 100%, #1a1a2e, #0f0f1b);
+        }
+        
+        .cake-wrapper { 
+            position: relative; width: 320px; height: 350px; margin-top: 40px; 
+            filter: drop-shadow(0 0 15px rgba(255, 105, 180, 0.8));
         }
 
-        /* --- SCREEN 3: CAKE --- */
-        .cake-wrapper { position: relative; width: 300px; height: 300px; margin-top: 40px; }
-        .cake {
+        .base-plate {
             position: absolute; bottom: 0; left: 50%; transform: translateX(-50%);
-            width: 200px; height: 120px; background: #ff99b6;
-            border-radius: 15px 15px 0 0; box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+            width: 300px; height: 15px; background: #ddd; border-radius: 0 0 10px 10px;
         }
-        .cake::before {
-            content: ''; position: absolute; top: -20px; left: 0; width: 100%; height: 30px;
-            background: #fff; border-radius: 10px 10px 0 0;
+
+        .layer {
+            position: absolute; left: 50%; transform: translateX(-50%);
+            background: #ff69b4;
+            box-shadow: inset 0 0 10px rgba(0,0,0,0.3);
+            border-radius: 10px 10px 0 0;
         }
+        .layer-bottom { width: 250px; height: 100px; bottom: 15px; }
+        .layer-top { width: 180px; height: 80px; bottom: 115px; }
+
+        .frosting {
+            position: absolute; left: 0; width: 100%; height: 25px;
+            background: #fff;
+            border-radius: 10px 10px 0 0;
+            filter: drop-shadow(0 2px 2px rgba(0,0,0,0.1));
+        }
+        .layer-bottom .frosting { top: -25px; }
+        .layer-top .frosting { top: -25px; }
+
+        .drip-effect {
+            position: absolute; bottom: -5px; left: 0; width: 100%; height: 20px;
+            background: #fff;
+            clip-path: polygon(0 0, 10% 100%, 20% 0, 30% 100%, 40% 0, 50% 100%, 60% 0, 70% 100%, 80% 0, 90% 100%, 100% 0);
+            z-index: 5;
+        }
+
         .candle-container {
-            display: flex; justify-content: center; gap: 15px;
-            position: absolute; top: -60px; left: 50%; transform: translateX(-50%); z-index: 10;
+            display: flex; justify-content: center; gap: 10px;
+            position: absolute; bottom: 210px; left: 50%; transform: translateX(-50%); z-index: 10;
         }
         .candle {
-            width: 10px; height: 40px;
-            background: repeating-linear-gradient(45deg, #fff, #fff 5px, #8A2BE2 5px, #8A2BE2 10px);
-            position: relative; cursor: pointer;
+            width: 8px; height: 35px;
+            background: repeating-linear-gradient(45deg, #f0f0f0, #f0f0f0 5px, #8A2BE2 5px, #8A2BE2 10px);
+            position: relative; cursor: pointer; border-radius: 2px;
         }
         .flame {
-            width: 12px; height: 20px; background: #ffcc00;
-            border-radius: 50% 50% 20% 20%;
-            position: absolute; top: -20px; left: 50%; transform: translateX(-50%);
+            width: 10px; height: 18px; background: #ffcc00; border-radius: 50% 50% 20% 20%;
+            position: absolute; top: -18px; left: 50%; transform: translateX(-50%);
             box-shadow: 0 0 10px #ff9900, 0 0 20px #ffff00;
             animation: flicker 0.5s infinite alternate;
         }
-        @keyframes flicker {
-            0% { transform: translateX(-50%) scale(1); opacity: 1; }
-            100% { transform: translateX(-50%) scale(1.1); opacity: 0.8; }
-        }
         .candle.blown .flame { display: none; }
-        .smoke {
-            position: absolute; top: -25px; left: 50%; width: 5px; height: 0;
-            background: rgba(100,100,100,0.5); transform: translateX(-50%);
-            border-radius: 5px; transition: height 0.5s, opacity 1s;
-        }
+        .smoke { height: 0; opacity: 0; }
         .candle.blown .smoke { height: 30px; opacity: 0; }
 
-        /* --- SCREEN 4: FINAL --- */
-        #screen-final { background: rgba(0,0,0,0.9); }
+
+        /* --- SCREEN 4: FINAL (ENLARGED & SAME BACKGROUND) --- */
+        #screen-final { 
+            background: transparent;
+        }
         .final-image-container {
-            width: 90%; height: 70vh;
+            width: 90%; 
+            max-width: 800px;
+            height: 90vh;
             display: flex; justify-content: center; align-items: center;
-            border: 5px solid white; background: #000;
-            border-radius: 10px; overflow: hidden;
+            background: transparent;
+            border-radius: 0;
         }
         .final-image-container img {
-            width: 100%; height: 100%; object-fit: contain;
+            width: auto; 
+            max-width: 90%;
+            max-height: 90%;
+            object-fit: contain;
+            border-radius: 10px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
         }
 
     </style>
@@ -183,31 +207,37 @@
 
     <div id="screen-intro" class="screen active">
         <div class="intro-box">
-            <h1>Happy Birthday! 🎂</h1>
-            <p>Turn up the volume 🔊</p>
-            <button class="btn" onclick="startJourney()">Click Here ✨</button>
+            <h1>Happy Birthday Minnu! 💖</h1>
+            <p style="font-size: 1.1rem; color: #555;">Ready for your special photo slideshow?</p>
+            <button class="btn" onclick="startJourney()">Start Slideshow ✨</button>
         </div>
     </div>
 
     <div id="screen-gallery" class="screen">
         <div class="gallery-container" id="gallery-wrapper">
             </div>
-        <div class="next-btn-container" style="position: absolute; bottom: 20px;">
-            <button class="btn" onclick="goToCake()">Blow Candles 🕯️</button>
-        </div>
     </div>
 
     <div id="screen-cake" class="screen">
-        <h2 style="font-size: 2rem; color: #333; margin-bottom: 10px; text-shadow: 2px 2px white;">Make a Wish!</h2>
+        <h2 style="font-size: 2rem; color: #fff; margin-bottom: 20px; text-shadow: 0 0 10px #ff69b4;">Make a Wish!</h2>
+        
         <div class="cake-wrapper">
-            <div class="cake">
-                <div class="candle-container">
-                    <div class="candle" onclick="blowCandle(this)"><div class="flame"></div><div class="smoke"></div></div>
-                    <div class="candle" onclick="blowCandle(this)"><div class="flame"></div><div class="smoke"></div></div>
-                    <div class="candle" onclick="blowCandle(this)"><div class="flame"></div><div class="smoke"></div></div>
-                    <div class="candle" onclick="blowCandle(this)"><div class="flame"></div><div class="smoke"></div></div>
-                    <div class="candle" onclick="blowCandle(this)"><div class="flame"></div><div class="smoke"></div></div>
-                </div>
+            <div class="base-plate"></div>
+            <div class="layer layer-bottom">
+                <div class="frosting"></div>
+                <div class="drip-effect"></div>
+            </div>
+            <div class="layer layer-top">
+                <div class="frosting"></div>
+                <div class="drip-effect"></div>
+            </div>
+
+            <div class="candle-container">
+                <div class="candle" onclick="blowCandle(this)"><div class="flame"></div><div class="smoke"></div></div>
+                <div class="candle" onclick="blowCandle(this)"><div class="flame"></div><div class="smoke"></div></div>
+                <div class="candle" onclick="blowCandle(this)"><div class="flame"></div><div class="smoke"></div></div>
+                <div class="candle" onclick="blowCandle(this)"><div class="flame"></div><div class="smoke"></div></div>
+                <div class="candle" onclick="blowCandle(this)"><div class="flame"></div><div class="smoke"></div></div>
             </div>
         </div>
     </div>
@@ -221,56 +251,47 @@
 
     <script>
         // --- CONFIGURATION ---
-        // EXACT filenames. Check extensions carefully!
         const photos = ['1.jpg', '2.jpeg', '3.jpg', '4.jpg', '5.jpg', '7.jpg'];
-        
         const audio = document.getElementById('bg-music');
+        let currentPhotoIndex = 0;
         let candlesBlown = 0;
         const totalCandles = 5;
-        let isSlideshowActive = false; // Flag to control slideshow
+        let slideshowInterval;
 
-        // --- NAVIGATION ---
+        // --- NAVIGATION & TRANSITIONS ---
         function startJourney() {
-            // Play audio
             audio.volume = 0.6;
             audio.play().catch(e => console.log("Audio waiting for user interaction"));
 
-            // Switch to Gallery
-            transitionScreen('screen-intro', 'screen-gallery');
-
-            // Start Slideshow
-            isSlideshowActive = true;
             initSlideshow();
+            
+            transitionScreen('screen-intro', 'screen-gallery', () => {
+                // Start the automatic cycle once the gallery is visible
+                cyclePhotos();
+                slideshowInterval = setInterval(cyclePhotos, 3500); // Change photo every 3.5 seconds
+            });
         }
 
-        function goToCake() {
-            isSlideshowActive = false; // Stop slideshow loop
-            transitionScreen('screen-gallery', 'screen-cake');
-        }
-
-        function transitionScreen(fromId, toId) {
+        function transitionScreen(fromId, toId, callback = () => {}) {
             const current = document.getElementById(fromId);
             const next = document.getElementById(toId);
 
-            // 1. Fade out current
             gsap.to(current, { opacity: 0, duration: 0.8, onComplete: () => {
                 current.classList.remove('active');
-                next.classList.add('active'); // Make next visible in DOM
-                
-                // 2. Fade in next
-                gsap.to(next, { opacity: 1, duration: 0.8 });
+                next.classList.add('active');
+                gsap.to(next, { opacity: 1, duration: 0.8, onComplete: callback });
             }});
         }
 
-        // --- SLIDESHOW LOGIC ---
+        // --- SLIDESHOW LOGIC (Cool Transitions) ---
         function initSlideshow() {
             const wrapper = document.getElementById('gallery-wrapper');
-            wrapper.innerHTML = ''; // Clear existing to prevent duplicates
+            wrapper.innerHTML = ''; // Clear old content
 
-            // Create cards
             photos.forEach((src, index) => {
                 const card = document.createElement('div');
                 card.className = 'photo-card';
+                card.id = `photo-${index}`;
                 
                 const img = document.createElement('img');
                 img.src = src;
@@ -279,37 +300,60 @@
                 card.appendChild(img);
                 wrapper.appendChild(card);
             });
+        }
 
+        function cyclePhotos() {
             const cards = document.querySelectorAll('.photo-card');
-            let currentIndex = 0;
+            const totalPhotos = cards.length;
 
-            function cyclePhotos() {
-                if (!isSlideshowActive) return; // Stop if we moved to next screen
-
-                // Hide all cards
-                cards.forEach(c => {
-                    gsap.to(c, { opacity: 0, scale: 0.8, zIndex: 0, duration: 0.5 });
-                });
-
-                // Show current card
-                const current = cards[currentIndex];
-                if(current) {
-                    gsap.to(current, { 
-                        opacity: 1, 
-                        scale: 1, 
-                        zIndex: 10, 
-                        rotation: Math.random() * 6 - 3, 
-                        duration: 0.8, 
-                        ease: "back.out(1.7)" 
-                    });
-                }
-
-                currentIndex = (currentIndex + 1) % cards.length;
-                setTimeout(cyclePhotos, 2500);
+            if (currentPhotoIndex >= totalPhotos) {
+                // End of slideshow: Stop and transition to cake
+                clearInterval(slideshowInterval);
+                transitionScreen('screen-gallery', 'screen-cake');
+                return;
             }
 
-            // Start cycle immediately
-            cyclePhotos();
+            const current = cards[currentPhotoIndex];
+            const previousIndex = (currentPhotoIndex - 1 + totalPhotos) % totalPhotos;
+            const previous = cards[previousIndex];
+
+            // 1. Hide the previous photo (unless it's the very first one)
+            if (currentPhotoIndex > 0) {
+                 gsap.to(previous, {
+                    opacity: 0, 
+                    scale: 0.9, 
+                    rotation: -5,
+                    duration: 0.5, 
+                    ease: "power1.in" 
+                });
+            }
+
+            // 2. Show the current photo with a unique animation based on its index
+            let animationType = currentPhotoIndex % 3; // Cycle through 3 animation types
+
+            gsap.set(current, { zIndex: 10 });
+
+            if (animationType === 0) {
+                // Zoom/Rotate Entry
+                gsap.fromTo(current, 
+                    { opacity: 0, scale: 0.5, rotation: 10, x: 0 },
+                    { opacity: 1, scale: 1, rotation: 0, duration: 1.2, ease: "back.out(1.5)" }
+                );
+            } else if (animationType === 1) {
+                // Slide/Skew Entry from Right
+                gsap.fromTo(current,
+                    { opacity: 0, x: '100%', skewX: -20 },
+                    { opacity: 1, x: '0%', skewX: 0, duration: 1.0, ease: "power2.out" }
+                );
+            } else {
+                 // Classic Fade/Depth Entry
+                gsap.fromTo(current,
+                    { opacity: 0, y: 50, filter: 'blur(5px)' },
+                    { opacity: 1, y: 0, filter: 'blur(0px)', duration: 1.0, ease: "power1.out" }
+                );
+            }
+
+            currentPhotoIndex++;
         }
 
         // --- CAKE LOGIC ---
@@ -322,7 +366,6 @@
             if(candlesBlown === totalCandles) {
                 setTimeout(() => {
                     transitionScreen('screen-cake', 'screen-final');
-                    // Confetti burst
                     confetti({ particleCount: 150, spread: 70, origin: { y: 0.6 } });
                 }, 1000);
             }
@@ -332,10 +375,17 @@
         function endExperience() {
             audio.pause();
             audio.currentTime = 0;
+            
             const btn = document.getElementById('thank-you-btn');
             btn.innerText = "Glad you liked it! 😊";
             btn.style.background = "#ccc";
             btn.disabled = true;
+
+            const endConfetti = setInterval(() => {
+                confetti({ particleCount: 50, spread: 60, origin: { y: 0 } });
+            }, 500);
+
+            setTimeout(() => clearInterval(endConfetti), 3000);
         }
     </script>
 </body>
